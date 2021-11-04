@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethereum</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+
+<body class="bg-light">
+
+    <div class="container" style="height: 100%;">
+        <%- body %>
+    </div>
+    <script>
+
+        const daiAbi = [
+            "function getCount() public view returns (uint)",
+            "function createTask (string memory _content) public returns (bool success)",
+            "function getTask (uint _count) public view returns (string memory)"
+        ];
+
+        let daiContract = null;
+
+        // const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        provider.send("eth_requestAccounts", []).then(() => {
+            const signer = provider.getSigner();
+            // signer.getAddress().then((address)=>{
+            //     console.log("Account: "+address);
+            // })
+
+            // const signer = provider.getSigner()
+
+
+
+            daiContract = new ethers.Contract("0xC810701febaA1a618Fa2e902CF7562D3289Dc046", daiAbi, signer);
+
+
+
+            // Fetch todos
+            daiContract.getCount().then((count) => {
+                count = parseInt(count)
+                for (let i = 1; i <= count; i++) {
+                    daiContract.getTask(i).then((myTask) => {
+                        $('#todos').append('<div class="row"><div class="col card mt-2 border-light shadow-sm p-3">' + myTask + '</div></div>')
+                    })
+                }
+            })
+
+
+
+
+        })
+
+        async function addTodo() {
+
+            let Todo = $('#todo').val()
+            $('#todo').val('')
+
+            daiContract.createTask(Todo).then((data) => {
+                daiContract.getCount().then((count) => {
+                    daiContract.getTask(count).then((myTask) => {
+                        $('#todos').append('<div class="row"><div class="col card mt-2 border-light shadow-sm p-3">' + myTask + '</div></div>')
+                    })
+                })
+
+            })
+            // alert(await daiContract.getTask(await daiContract.getCount()))
+        }
+
+    </script>
+</body>
+
+</html>

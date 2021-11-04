@@ -1,0 +1,124 @@
+<div class="row">
+    <div class="mt-4 col-md-3">
+        <div class="card border-light shadow-sm p-3">
+            <center>
+                <i class="fa fa-user-circle" aria-hidden="true" style="font-size: 80px;"></i>
+            </center>
+            <table class="table table-responsive mt-2 table-hover">
+                <tr>
+                    <td class="title select" onclick="location.href='/doctor-home'">Dashboard</td>
+                </tr>
+                <tr>
+                    <td class="title select" onclick="location.href='/doctor-add-record'">Add Medical record</td>
+                </tr>
+                <tr>
+                    <td class="title select">Account</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card border-light shadow-sm mt-4 p-3">
+            <h4 class="title">Dashboard</h4>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="p-3 card dashcard">
+                        <div class="row">
+                            <div class="col">
+                                <center>
+                                    <i class="fa fa-users mt-3" aria-hidden="true" style="font-size: 45px;"></i>
+                                </center>
+                            </div>
+                            <div class="col">
+                                <center>
+                                    <h2 id="patients">0</h2>
+                                    <h4>Patients</h4>
+                                </center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 card dashcard">
+                        <div class="row">
+                            <div class="col">
+                                <center>
+                                    <i class="fa fa-eye-slash mt-3" aria-hidden="true" style="font-size: 45px;"></i>
+                                </center>
+                            </div>
+                            <div class="col">
+                                <center>
+                                    <h2 id="access">0</h2>
+                                    <h4>Access</h4>
+                                </center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="content_doctor">
+            <div class="card p-3 mt-4 shadow-sm border-light">
+                <h4>Granted Access</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Approved</th>
+                            <th>Account</th>
+                        </thead>
+                        <tbody id="access_body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    $(() => {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = provider.getSigner();
+
+
+        Contract = new ethers.Contract(contAddress, daiAbi, signer);
+
+        try {
+            signer.getAddress().then((address) => {
+                if (address) {
+                    Contract.getDocDashboard().then((dash) => {
+                        $('#patients').html(dash[1].toString())
+                        $('#access').html(dash[0].toString())
+                    })
+                    Contract.getAccess().then((address) => {
+                        // alert(address.length)
+                        address.forEach(account => {
+                            Contract.accs(account).then((data) => {
+                                // alert(data)
+                                var approve = 'Not approved'
+                                var _class = 'danger'
+                                if (data[4] == true) {
+                                    approve = 'Approved'
+                                    _class = 'success'
+                                }
+                                $('#access_body').append('<tr class="select" onclick="location.href=\'/doc_view_record?id='+account+'\'">\
+                                <td>'+data[1]+'</td>\
+                                <td>'+data[2]+'</td>\
+                                <td><span class="badge bg-'+_class+'">'+approve+'</span></td>\
+                                <td>'+ account + '</td>\
+                                </tr>')
+                            })
+
+                        });
+                    })
+                }
+            })
+        } catch (e) {
+
+        }
+    })
+</script>

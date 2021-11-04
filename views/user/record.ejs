@@ -1,0 +1,98 @@
+<style>
+    .title {
+        font-weight: bold;
+        color: #6C757D;
+    }
+    #docs {
+        background-image: url('doctors.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: top;
+        width: 50%;
+        height: 300px;
+    }
+</style>
+<div class="row">
+    <div class="mt-4 col-md-3">
+        <div class="card border-light shadow-sm p-3">
+            <center>
+                <i class="fa fa-user-circle" aria-hidden="true" style="font-size: 80px;"></i>
+            </center>
+            <table class="table table-responsive mt-2">
+                <tr>
+                    <td class="title">Name</td>
+                    <td id="name"></td>
+                </tr>
+                <tr>
+                    <td class="title">Location</td>
+                    <td id="location"></td>
+                </tr>
+                <tr>
+                    <td class="title">Insurance</td>
+                    <td id="insurance"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-9 " style="color: black;">
+        <div class="card p-3 mt-4 shadow-sm border-light">
+            Record details <br>
+        </div>
+        <div id="rec-det" class="mt-4 card shadow-sm border-light">
+            <div style="width: 100%; background-color: white;"><center>
+                <img src="record.jpg" style="width: auto; height: 300px;" alt="" srcset="">
+            </center></div>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+
+    let Contract = null;
+
+    // const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner();
+
+
+    Contract = new ethers.Contract(contAddress, daiAbi, signer);
+
+    try {
+        signer.getAddress().then((address) => {
+            if (address) {
+                Contract.getMyData().then((myData) => {
+                    $('#name').html(myData[0])
+                    $('#location').html(myData[1])
+                    $('#insurance').html(myData[2])
+                })
+
+                Contract.getRecord('<%= id %>').then((record)=>{
+                    console.log(record[0])
+                    $('#rec-det').append('<div class="p-3">\
+                        <span style="font-weight: bold;">Date: &nbsp;&nbsp;&nbsp; </span>'+format(record[2])+'\
+                        <h6></h6>\
+                        <span style="font-weight: bold; margin-top: 15px;">Doctor: &nbsp;&nbsp;&nbsp; </span> <a href="/doc?abx='+record[1]+'">'+record[1]+'    </a> <br>\
+                        <h6 style="margin-top: 15px; font-weight: bold;">Description</h6>\
+                        <p><i>'+record[0]+'</i></p>\
+                        <h6 style="margin-top: 15px; font-weight: bold;">Symptoms</h6>\
+                        <p><i>'+record[3]+'t</i></p>\
+                        <h6 style="margin-top: 15px; font-weight: bold;">Lab results</h6>\
+                        <p><i>'+record[4]+'t</i></p>\
+                        <h6 style="margin-top: 15px; font-weight: bold;">Medicines</h6>\
+                        <p><i>'+record[5]+'t</i></p>\
+                    </div>')
+                })
+
+            } else {
+                alert('Not found')
+            }
+        }).catch((e) => {
+            alert('You are not connected')
+            window.location.href = '/'
+        })
+    } catch (error) {
+        alert(error)
+    }
+
+</script>

@@ -1,0 +1,102 @@
+<div class="row">
+    <div class="mt-4 col-md-3">
+        <div class="card border-light shadow-sm p-3">
+            <center>
+                <i class="fa fa-user-circle" aria-hidden="true" style="font-size: 80px;"></i>
+            </center>
+            <table class="table table-responsive mt-2 table-hover">
+                <tr>
+                    <td class="title select" onclick="location.href='/doctor-home'">Dashboard</td>
+                </tr>
+                <tr>
+                    <td class="title select">Granted Access</td>
+                </tr>
+                <tr>
+                    <td class="title select" onclick="location.href='/doctor-add-record'">Add Medical record</td>
+                </tr>
+                <tr>
+                    <td class="title select">Account</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card border-light shadow-sm mt-4 p-3">
+            <h4 class="title">Add Record</h4>
+            <form action="#" onsubmit="record()" id="forms">
+                <div class="form-group">
+                    <label class="title">Patient address:</label>
+                    <select id="patient" class="form-control mt-2">
+
+                    </select>
+                </div>
+                <div class="form-group mt-2">
+                    <label class="title">Symptoms:</label>
+                    <textarea id="symp" cols="30" rows="4" class="form-control mt-2" required></textarea>
+                </div>
+                <div class="form-group mt-2">
+                    <label class="title">Lab Results:</label>
+                    <textarea id="res" cols="30" rows="4" class="form-control mt-2" required></textarea>
+                </div>
+                <div class="form-group mt-2">
+                    <label class="title">Medicines:</label>
+                    <textarea id="medics" cols="30" rows="4" class="form-control mt-2" required></textarea>
+                </div>
+                <div class="form-group mt-2">
+                    <label class="title">Description:</label>
+                    <textarea id="desc" cols="30" rows="4" class="form-control mt-2" required></textarea>
+                </div>
+                <input type="submit" value="Record" class="form-control mt-3 outline btn-outline-secondary">
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+    function record() {
+        let symp = $('#symp').val()
+        let patient = $('#patient').val()
+        let lab = $('#res').val()
+        let medics = $('#medics').val()
+        let desc = $('#desc').val()
+
+        Contract.addRecord(desc, symp, lab, medics, new Date().getTime(), patient).then((res) => {
+            if (res.hash) {
+                alert('Added successfully')
+                $('#forms').trigger('reset')
+            }
+        })
+        return false
+    }
+
+    $(() => {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = provider.getSigner();
+
+
+        Contract = new ethers.Contract(contAddress, daiAbi, signer);
+
+        try {
+            signer.getAddress().then((address) => {
+                if (address) {
+                    Contract.getAccess().then((access) => {
+                        for (let i = 0; i < access.length; i++) {
+                            const acc = access[i];
+                            Contract.accs(acc).then((userData) => {
+                                $('#patient').append('<option value="' + acc + '">' + userData[1] + ' (' + acc + ')</option>')
+                            })
+                        }
+                    })
+
+                }
+            })
+        } catch (e) {
+
+        }
+
+
+    })
+</script>

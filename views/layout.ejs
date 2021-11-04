@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> National eHealth System
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <style>
+        #top-nav {
+            /* background-color: #003D99; */
+            background-image: url('flag.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 0px 0px 10px 10px;
+            color: white;
+        }
+
+        .text {
+            color: #113953;
+        }
+
+        .outline:hover {
+            background-color: #113953;
+        }
+
+        .Active {
+            font-weight: bold;
+        }
+
+        body {
+            color: #113953;
+        }
+
+        .title {
+            font-weight: bold;
+            color: #6C757D;
+        }
+        .decoration {
+            text-decoration: none;
+            color: #113953;
+        }
+
+        .select {
+            cursor: pointer;
+        }
+        
+        .dashcard {
+            transition: 0.5s;
+        }
+        .dashcard:hover {
+            background-color: #11395374;
+            cursor: pointer;
+        }
+
+    </style>
+
+</head>
+
+<body class="bg-light">
+    <script>
+        // const daiAbi = [
+        //     "function getMyData() public view returns (string memory, string memory, string memory)",
+        //     "function getTotalRecord() public view returns(uint)",
+        //     "function getAbstractRecord(uint index) public view returns (string memory, address, uint)",
+        //     "function getDoctorDetails(address _doctor) public view returns(\
+        //     string memory, string memory, string memory, string memory, uint, string memory, uint\
+        //     )",
+        //     "function getRecord(uint index) public view returns (string memory, address, uint, string memory, string memory, string memory)",
+        //     "function registrationDoctor(string memory _fname, string memory _lname,\
+        //                         string memory _hosp, string memory _spec, uint _registeredOn, string memory _hired) public returns (bool success)",
+        //     "function registration(string memory _name, string memory _location, string memory _insurance) public returns (bool success)",
+        //     "function getDocDashboard() public onlyDoctor(msg.sender) view returns (uint, uint)"
+        // ];
+
+        const daiAbi = <%- abi %>;
+    
+        const contAddress = "0x0DC3aCbAfCC1F4935Dc4D57604b36d36Af94D1cf"
+
+        function SignIn() {
+
+            let Contract = null;
+
+            // const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
+            const provider = new ethers.providers.Web3Provider(window.ethereum)
+            provider.send("eth_requestAccounts", []).then(() => {
+                const signer = provider.getSigner();
+                signer.getAddress().then((address) => {
+                    window.location.href = '/home'
+                })
+            })
+        }
+
+        function connect() {
+
+            let Contract = null;
+
+            // const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
+            try {
+                const provider = new ethers.providers.Web3Provider(window.ethereum)
+                provider.send("eth_requestAccounts", []).then(() => {
+                    const signer = provider.getSigner();
+                    signer.getAddress().then((address) => {
+                        
+                    }).catch((err) => {
+                        alert('Error')
+                    })
+                })
+            } catch (e) {
+                $('#warningMetamask').show()
+                $('#contentDiv').hide()
+            }
+        }
+
+        function format(date) {
+            return new Date(parseFloat(date)).toLocaleString("en-US").toString()
+        }
+
+    </script>
+    <% if (isLogin) { %>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <nav class="navbar navbar-expand-lg p-3 border-light shadow-sm" id="top-nav">
+                        <a class="navbar-brand fw-bold" href="#" style="color: white;">National eHealth System</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                            <ul class="navbar-nav">
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="/home" style="color: white;">Home <span
+                                            class="sr-only">(current)</span></a>
+                                </li>
+                                <!-- <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                        style="color: white;">
+                                        Dropdown link
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                        <a class="dropdown-item" href="#">Action</a>
+                                        <a class="dropdown-item" href="#">Another action</a>
+                                        <a class="dropdown-item" href="#">Something else here</a>
+                                    </div>
+                                </li> -->
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+            <%- body %>
+        </div>
+
+        <% } else { %>
+            <div class="container">
+                <%- body %>
+            </div>
+            <% } %>
+
+
+</body>
+
+
+</html>

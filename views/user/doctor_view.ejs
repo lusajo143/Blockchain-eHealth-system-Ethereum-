@@ -1,0 +1,127 @@
+<style>
+    .title {
+        font-weight: bold;
+        color: #6C757D;
+    }
+    #docs {
+        background-image: url('doctors.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: top;
+        width: 50%;
+        height: 300px;
+    }
+</style>
+<div class="row">
+    <div class="mt-4 col-md-3">
+        <div class="card border-light shadow-sm p-3">
+            <center>
+                <i class="fa fa-user-circle" aria-hidden="true" style="font-size: 80px;"></i>
+            </center>
+            <table class="table table-responsive mt-2">
+                <tr>
+                    <td class="title">Name</td>
+                    <td id="name"></td>
+                </tr>
+                <tr>
+                    <td class="title">Location</td>
+                    <td id="location"></td>
+                </tr>
+                <tr>
+                    <td class="title">Insurance</td>
+                    <td id="insurance"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-9 " style="color: black;">
+        <div class="card p-3 mt-4 shadow-sm border-light">
+            Doctor details <br>
+        </div>
+        <div id="doc-det" class="mt-4 card shadow-sm border-light">
+            <div style="width: 100%; background-color: white;"><center>
+                <img src="doctors.jpg" style="width: auto; height: 250px;" alt="" srcset="">
+            </center></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    let Contract = null;
+
+    // const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner();
+
+
+    Contract = new ethers.Contract(contAddress, daiAbi, signer);
+
+    try {
+        signer.getAddress().then((address) => {
+            if (address) {
+                Contract.getMyData().then((myData) => {
+                    $('#name').html(myData[0])
+                    $('#location').html(myData[1])
+                    $('#insurance').html(myData[2])
+                })
+
+                Contract.getDoctorDetails('<%- doctor %>').then((details) => {
+                    console.log(details);
+                    $('#doc-det').append('\
+                    <div class="mt-3">\
+                        <div class="table-resppnsive">\
+            <table class="table">\
+                <tr>\
+                    <td style="padding-left: 20px; font-weight: bold;">First Name</td>\
+                    <td>'+ details[0] + '</td>\
+                </tr>\
+                <tr>\
+                    <td style="padding-left: 20px; font-weight: bold;">Last Name</td>\
+                    <td>'+ details[1] + '</td>\
+                </tr>\
+                <tr>\
+                    <td style="padding-left: 20px; font-weight: bold;">Address</td>\
+                    <td>\
+                        <%= doctor %>\
+                    </td>\
+                </tr>\
+                <tr>\
+                    <td style="padding-left: 20px; font-weight: bold;">Hospital</td>\
+                    <td><i class="fa fa-hospital-o" aria-hidden="true"></i>\
+                        <a href="#">'+ details[2] + '</a></td>\
+                </tr>\
+                <tr>\
+                    <td style="padding-left: 20px; font-weight: bold;">Specialization</td>\
+                    <td><i class="fa fa-user-md" aria-hidden="true"></i>\
+                        '+ details[3] + '</td>\
+                </tr>\
+                <tr>\
+                    <td style="padding-left: 20px; font-weight: bold;">Registered on</td>\
+                    <td>'+ format(details[4]) + '</td>\
+                </tr>\
+                <tr>\
+                    <td style="padding-left: 20px; font-weight: bold;">Was hired on</td>\
+                    <td>'+ details[5] + '</td>\
+                </tr>\
+                <tr>\
+                    <td style="padding-left: 20px; font-weight: bold;">Patients attended</td>\
+                    <td>'+ details[6] + '</td>\
+                </tr>\
+            </table>\
+            </div>\
+        </div>')
+                })
+
+            } else {
+                alert('Not found')
+            }
+        }).catch((e) => {
+            alert('You are not connected')
+            window.location.href = '/'
+        })
+    } catch (error) {
+        alert(error)
+    }
+
+</script>

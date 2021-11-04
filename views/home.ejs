@@ -1,0 +1,118 @@
+<style>
+    .title {
+        font-weight: bold;
+        color: #6C757D;
+    }
+</style>
+<div class="row">
+    <div class="mt-4 col-md-3">
+        <div class="card border-light shadow-sm p-3">
+            <center>
+                <i class="fa fa-user-circle" aria-hidden="true" style="font-size: 80px;"></i>
+            </center>
+            <table class="table table-responsive mt-2">
+                <tr>
+                    <td class="title">Name</td>
+                    <td id="name"></td>
+                </tr>
+                <tr>
+                    <td class="title">Location</td>
+                    <td id="location"></td>
+                </tr>
+                <tr>
+                    <td class="title">Insurance</td>
+                    <td id="insurance"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-9 " style="color: black;">
+        <div class="card p-3 mt-4 shadow-sm border-light">
+            Medical Records <br>
+        </div>
+        <div id="records">
+        </div>
+    </div>
+</div>
+
+<script>
+    
+
+    let Contract = null;
+
+    // const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner();
+
+
+    Contract = new ethers.Contract(contAddress, daiAbi, signer);
+
+    try {
+        signer.getAddress().then((address) => {
+            if (address) {
+                Contract.getMyData().then((myData) => {
+                    $('#name').html(myData[0])
+                    $('#location').html(myData[1])
+                    $('#insurance').html(myData[2])
+                })
+
+                Contract.getTotalRecord().then((count) => {
+                    count = parseInt(count.toString())
+                    if (count == 0) {
+                        $('#records').html('<h6 class="mt-3">You dont have medical records</h6>')
+                    } else {
+                        for (let i = 0; i < count; i++) {
+                            Contract.getAbstractRecord(i).then((data) => {
+                                $('#records').append('<div class="card mt-4 p-3 shadow-sm border-light">\
+                                    <div class="col"><span class="title">'+format(data[2])+'</span> \
+                                        <div class="row">\
+                                            <div class="col-md-10">\
+                                                <p>'+data[0]+' <br>\
+                                                    Addressed by: (<a href="/doc?abx='+data[1]+'">'+data[1]+'</a>)\
+                                                </p>\
+                                            </div>\
+                                            <div class="col-md-2">\
+                                                <a href="/record?id='+i+'" class="btn outline btn-outline-secondary" style="width: 100%;">View</a>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </div>')
+                            })
+                        }
+                    }
+                })
+            } else {
+                alert('Not found')
+            }
+        }).catch((e) => {
+            alert('You are not connected')
+            window.location.href = '/'
+        })
+    } catch (error) {
+        alert(error)
+    }
+
+            // provider.send("eth_requestAccounts", []).then(() => {
+            //     const signer = provider.getSigner();
+            //     // signer.getAddress().then((address)=>{
+            //     //     alert(address.toString())
+            //     // })
+
+
+            //     Contract = new ethers.Contract("0x0d085194a3FC93ad104a344787302cedae803Fd0", daiAbi, signer);
+
+            //     Contract.userCount.then((myData) => {
+            //         alert(myData.toString())
+            //     })
+
+            //     // // Fetch todos
+            //     // Contract.getCount().then((count) => {
+            //     //     count = parseInt(count)
+            //     //     for (let i = 1; i <= count; i++) {
+            //     //         Contract.getTask(i).then((myTask) => {
+            //     //             $('#todos').append('<div class="row"><div class="col card mt-2 border-light shadow-sm p-3">' + myTask + '</div></div>')
+            //     //         })
+            //     //     }
+            //     // })
+            // })
+</script>

@@ -1,0 +1,197 @@
+<div class="row mt-5">
+    <div class="col mt-4">
+        <center>
+            <div class="text">
+                <h2>National eHealth System</h2>
+            </div>
+        </center>
+    </div>
+</div>
+
+<style>
+    #header {
+        background-image: url("flag.png");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        border-radius: 5px 5px 0px 0px;
+    }
+
+    #meta_home {
+        background-color: #f6851b52;
+        border-radius: 20px;
+        color: white;
+    }
+
+    #meta_home:hover {
+        cursor: pointer;
+        background-color: #f6851b6d;
+    }
+</style>
+
+<div class="row mt-4">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <div class="card border-light bg-white shadow-sm">
+            <div class="card-header" id="header">
+                <center>
+                    <i class="fa fa-user-circle-o text-white" style="font-size: 60px;" aria-hidden="true"></i> <br>
+                    <span style="font-size: large; color: white; font-weight: bold;">Register</span>
+                </center>
+            </div>
+
+            <div id="warningMetamask" class="m-3">
+                <div class="bg-warning p-3 shadow-sm rounded">
+                    <center>Make sure you have installed Metamask <br> Extension.</center>
+                </div>
+                <button class="btn w-100 outline mt-3" style="background-color: #113953; color: white;" onclick="location.reload()">Reload</button>
+            </div>
+
+            <div id="contentDiv">
+                <ul class="nav nav-tabs mt-2">
+                    <li class="nav-item">
+                        <a class="nav-link active Active" href="#" id="tCustomer" onclick="toCustomer()"
+                            style="color: #113953;">Customer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="toDoc()" id="tDoctor" style="color: #113953;">Doctor</a>
+                    </li>
+                </ul>
+    
+    
+    
+                <div id="customer" class="m-3">
+                    <form action="#" onsubmit="return register('fCustomer')" id="fCustomer">
+                        <div class="form-group">
+                            <label for="cname" class="mb-2">Name:</label>
+                            <input type="text" required id="cname" class="form-control" placeholder="Enter your name">
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="clocation" class="mb-2">Location:</label>
+                            <select id="clocation" class="form-control">
+                                <option value="Dodoma">Dodoma</option>
+                                <option value="Arusha">Arusha</option>
+                                <option value="Mbeya">Mbeya</option>
+                                <option value="Mwanza">Mwanza</option>
+                            </select>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="cinsurance" class="mb-2">Insurance:</label>
+                            <select id="cinsurance" class="form-control">
+                                <option value="NHIF">NHIF</option>
+                            </select>
+                        </div>
+                        <input type="submit" value="Sign Up" style="background-color: #113953; color: white;"
+                            class="btn outline w-100 mt-3">
+                        <hr>
+                        <center><span>Back to <a href="/">Sign In</a></span></center>
+                    </form>
+                </div>
+    
+                <div id="doctor" class="m-3">
+                    <form action="#" onsubmit="return register('fDoctor')" id="fDoctor">
+                        <div class="form-group">
+                            <label for="dfname" class="mb-2">First Name:</label>
+                            <input type="text" required id="dfname" class="form-control">
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="dlname" class="mb-2">Last Name:</label>
+                            <input type="text" required id="dlname" class="form-control">
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="dhosp" class="mb-2">Hospital:</label>
+                            <select id="dhosp" class="form-control">
+                                <option value="Benjamin Mkapa">Benjamin Mkapa</option>
+                                <option value="General">General</option>
+                                <option value="Mwanza">Mwanza</option>
+                            </select>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="dspec" class="mb-2">Specification:</label>
+                            <input type="text" required id="dspec" class="form-control">
+                        </div>
+                        <input type="submit" value="Sign Up" style="background-color: #113953; color: white;"
+                            class="btn outline w-100 mt-3">
+                        <hr>
+                        <center><span>Back to <a href="/">Sign In</a></span></center>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-4"></div>
+</div>
+
+<div class="row mt-2 mb-2">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <hr>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <center>National eHealth System &copy;2021</center>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+
+
+<script>
+    $(() => {
+        $('#doctor').hide()
+        $('#warningMetamask').hide()
+        connect()
+
+    })
+    function toDoc() {
+        $('#customer').hide()
+        $('#doctor').show()
+
+        $('#tCustomer').removeClass('active').removeClass('Active')
+        $('#tDoctor').addClass('active').addClass('Active')
+    }
+    function toCustomer() {
+        $('#doctor').hide()
+        $('#customer').show()
+
+        $('#tDoctor').removeClass('active').removeClass('Active')
+        $('#tCustomer').addClass('active').addClass('Active')
+    }
+
+
+    function register(id) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = provider.getSigner()
+        if (id == 'fDoctor') {
+            let fname = document.getElementById('dfname').value
+            let lname = document.getElementById('dlname').value
+            let hosp = document.getElementById('dhosp').value
+            let spec = document.getElementById('dspec').value
+
+            Contract = new ethers.Contract(contAddress, daiAbi, signer)
+
+            Contract.registrationDoctor(fname, lname, hosp, spec, new Date().getTime(), 0).then((resp) => {
+                if (resp.hash) {
+                    window.location.href = '/doctor-home'
+                }
+            })
+        } else if (id == 'fCustomer') {
+            let name = document.getElementById('cname').value
+            let location = document.getElementById('clocation').value
+            let insurance = document.getElementById('cinsurance').value
+
+            Contract = new ethers.Contract(contAddress, daiAbi, signer)
+
+            Contract.registration(name, location, insurance).then((resp)=>{
+                if (resp.hash) {
+                    window.location.href = '/home'
+                }
+            })
+            
+        }
+    }
+</script>
