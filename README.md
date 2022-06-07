@@ -7,8 +7,8 @@ This is the simple dapp which runs on ethereum blockchain which has two main par
 - Give or Revoke permission to view their medical records to doctors
 
 **Doctors**
-- Adds medical records of a patient
-- Views medical records of patients
+- Adds patient's medical records
+- Views patient's medical records
 
 ## Prerequisities
 - Ganache
